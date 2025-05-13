@@ -1,0 +1,30 @@
+<!--DOCTYPE html-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div class="main"><!--dette er nyt-->
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <h2>Closed Tickets</h2>
+    {% if tickets %}
+    {% for ticket in tickets %}
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <strong>{{ ticket.title }}</strong><br>
+        <p>{{ ticket.message }}</p>
+        <em>Status: {{ ticket.status }}</em><br>
+        {% if ticket.admin_response %}
+        <strong>Admin Response:</strong><br>
+        <p>{{ ticket.admin_response }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>You don't have any closed tickets.</p>
+    {% endif %}
+    <a href="{{ url_for('my_tickets') }}">Back to My Tickets</a>
+    </div>
+</body>
+</html>
