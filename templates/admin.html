@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome</h1>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('admin_closed_tickets') }}">View Closed Tickets</a>
+        <h2>Admin Dashboard</h2>
+        <h3>Tickets</h3>
+        {% for ticket in tickets %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <strong>{{ ticket.title }}</strong> by {{ ticket.user.username }}<br>
+            <em>Status: {{ ticket.status }}</em><br>
+            <p>{{ ticket.message }}</p>
+
+            {% if ticket.admin_response %}
+            <strong>Response:</strong> {{ ticket.admin_response }}<br>
+            {% endif %}
+
+            <form method="POST">
+                <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                <label>Status:
+                <select name="status">
+                    <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %}>Open</option>
+                    <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>Closed</option>
+                    <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                </select>
+                </label><br>
+                <textarea name="response" placeholder="Admin response...">{{ ticket.admin_response }}</textarea><br>
+                <button type="submit">Update</button>
+                </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
