@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <div class="main">
+        <h1>Welcome to Tickets</h1>
+        <a href="{{ url_for('my_tickets') }}">View My Tickets</a><br>
+        <a href="{{ url_for('closed_tickets') }}">View Closed Tickets</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <h2>Submit a Ticket</h2>
+        <form method="POST">
+            <input name="title" placeholder="Title" required><br>
+            <textarea name="message" placeholder="Describe your issue..." required></textarea><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+</body>
+</html>
