@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333333;
+        }
+        .user-info {
+            margin-top: 20px;
+            background-color: #e5e7eb;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .button {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <h1>Welcome, {{ user.username }}! to Ticketflow</h1>
+        <a href="{{ url_for('ticket') }}">Ticket</a> <!--dette er nyt-->
+        <a href="{{ url_for('my_tickets') }}">View My Tickets</a><br>
+        <a href="{{ url_for('closed_tickets') }}">View Closed Tickets</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+        <h1>Welcome, Guest!</h1>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register')}}">Register</a>
+    {% endif %}
+</body>
+</html>
