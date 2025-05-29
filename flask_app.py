@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user
 from flask_bcrypt import Bcrypt
 from flask_login import current_user
-from flask_login import login_required #dette er nyt
+from flask_login import login_required 
+from sqlalchemy.sql import func 
+from datetime import datetime
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "?"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb://"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SECRET_KEY"] = "abc"
 db = SQLAlchemy(app)
@@ -19,26 +21,28 @@ class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False) #dette er nyt
+    is_admin = db.Column(db.Boolean, default=False) 
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
     message = db.Column(db.Text, nullable=False)
+    location = db.Column(db.String(100))  
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('Users', backref=db.backref('tickets', lazy=True))
+    user = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('tickets', lazy=True))
     status = db.Column(db.String(50), default='Open')
     admin_response = db.Column(db.Text)
+    ticket_created_at = db.Column(db.DateTime(timezone=True), server_default=func.now()) 
+    ticket_closed_at = db.Column(db.DateTime(timezone=True), nullable=True)  
+    closed_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    closed_by = db.relationship('Users', foreign_keys=[closed_by_id])
 
 with app.app_context():
     db.create_all()
 
-# ----------- Login Setup -----------
 @login_manager.user_loader
 def loader_user(user_id):
     return Users.query.get(user_id)
-
-# ----------- Routes -----------
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -51,7 +55,7 @@ def register():
             return "User already exists", 400
 
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        is_admin = username == "bitadmin11"
+        is_admin = username.startswith("bitadmin")
         user = Users(username=username, password=hashed_password, is_admin=is_admin)
         db.session.add(user)
         db.session.commit()
@@ -77,7 +81,6 @@ def login():
             return "Incorrect password", 401
     return render_template("login.html")
 
-
 @app.route("/admin", methods=["GET", "POST"])
 @login_required
 def admin_dashboard():
@@ -93,11 +96,23 @@ def admin_dashboard():
         if ticket:
             ticket.status = new_status
             ticket.admin_response = admin_response
+            if new_status == "Closed" and ticket.ticket_closed_at is None:
+                ticket.ticket_closed_at = datetime.utcnow()
+                ticket.closed_by_id = current_user.id
             db.session.commit()
         return redirect(url_for("admin_dashboard"))
 
-    tickets = Ticket.query.filter(Ticket.status != "Closed").all()
-    return render_template("admin.html", user=current_user, tickets=tickets)
+    # 🔍 Handle location search
+    search_location = request.args.get("location")
+    query = Ticket.query.filter(Ticket.status != "Closed")
+
+    if search_location:
+        query = query.filter(Ticket.location.ilike(f"%{search_location}%"))
+
+    tickets = query.all()
+
+    return render_template("admin.html", user=current_user, tickets=tickets, search_location=search_location)
+
 
 @app.route("/ticket", methods=["GET", "POST"])
 @login_required
@@ -105,8 +120,14 @@ def ticket():
     if request.method == "POST":
         title = request.form.get("title")
         message = request.form.get("message")
+        location = request.form.get("location") 
 
-        new_ticket = Ticket(title=title, message=message, user_id=current_user.id)
+        new_ticket = Ticket(
+            title=title,
+            message=message,
+            location=location, 
+            user_id=current_user.id
+        )
         db.session.add(new_ticket)
         db.session.commit()
         return redirect(url_for("home"))
@@ -137,14 +158,22 @@ def closed_tickets():
     closed = Ticket.query.filter_by(user_id=current_user.id, status="Closed").all()
     return render_template("closed_tickets.html", tickets=closed)
 
+
 @app.route("/admin/closed_tickets")
 @login_required
 def admin_closed_tickets():
     if not current_user.is_admin:
         return "Unauthorized", 403
 
-    closed_tickets = Ticket.query.filter_by(status="Closed").all()
-    return render_template("admin_closed_tickets.html", tickets=closed_tickets)
+    search_location = request.args.get("location")
+    query = Ticket.query.filter_by(status="Closed") 
+
+    if search_location:
+        query = query.filter(Ticket.location.ilike(f"%{search_location}%"))
+
+    closed_tickets = query.all()  
+    return render_template("admin_closed_tickets.html", tickets=closed_tickets, search_location=search_location)
+
 
 @app.route("/logout")
 def logout():
@@ -154,3 +183,11 @@ def logout():
 @app.route("/")
 def home():
     return render_template("home.html", user=current_user)
+
+from pytz import timezone
+
+@app.template_filter('cet')
+def convert_to_cet(utc_dt):
+    if utc_dt:
+        return utc_dt.astimezone(timezone('Europe/Copenhagen')).strftime('%Y-%m-%d %H:%M:%S')
+    return 'N/A'
