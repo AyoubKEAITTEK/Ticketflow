@@ -1,30 +1,90 @@
-<!--DOCTYPE html-->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <meta http-equiv="refresh" content="10" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Closed Tickets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .ticket {
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .ticket strong {
+            color: #111827;
+        }
+        .ticket em {
+            color: #6b7280;
+        }
+        .ticket p {
+            margin-top: 8px;
+            color: #374151;
+            line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
-    <div class="main"><!--dette er nyt-->
-    <a href="{{ url_for('logout') }}">Logout</a>
-    <h2>Closed Tickets</h2>
-    {% if tickets %}
-    {% for ticket in tickets %}
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-        <strong>{{ ticket.title }}</strong><br>
-        <p>{{ ticket.message }}</p>
-        <em>Status: {{ ticket.status }}</em><br>
-        {% if ticket.admin_response %}
-        <strong>Admin Response:</strong><br>
-        <p>{{ ticket.admin_response }}</p>
-        {% endif %}
-    </div>
-    {% endfor %}
-    {% else %}
-    <p>You don't have any closed tickets.</p>
-    {% endif %}
-    <a href="{{ url_for('my_tickets') }}">Back to My Tickets</a>
+    <div class="container">
+        <h1>My Closed Tickets</h1>
+        <a href="{{ url_for('home') }}">Home</a>
+
+        {% for ticket in tickets %}
+        <div class="ticket">
+            <strong>{{ ticket.title }}</strong><br>
+            <strong>Location:</strong> {{ ticket.location }}<br>
+
+            <strong>Created At:</strong> {{ ticket.ticket_created_at|cet }}<br>
+
+            {% if ticket.ticket_closed_at %}
+            <strong>Closed At:</strong> {{ ticket.ticket_closed_at|cet }}<br>
+            {% endif %}
+
+            {% if ticket.closed_by %}
+            <strong>Closed by:</strong> {{ ticket.closed_by.username }}<br>
+            {% endif %}
+
+            <em>Status: {{ ticket.status }}</em><br>
+            <p>{{ ticket.message }}</p>
+
+            {% if ticket.admin_response %}
+            <strong>Response:</strong><br>
+            <p>{{ ticket.admin_response }}</p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No closed tickets found.</p>
+        {% endfor %}
     </div>
 </body>
 </html>
