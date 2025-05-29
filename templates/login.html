@@ -1,31 +1,125 @@
-<!--DOCTYPE html-->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | TicketFlow</title>
+    <style>
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #374151;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 20px;
+            color: #4b5563;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="main"><!--dette er nyt-->
-         <h1>TicketFlow</h1><!--dette er nyt-->
-         <h2>Enter Your Login Credentials</h2><!--dette er nyt-->
-    <!--<h1>Login</h1>(dette var med før-->
-    <form method="POST">
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username" required><br><br>
+    <div class="main">
+        <h1>TicketFlow</h1>
+        <h2>Enter Your Login Credentials</h2>
 
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required><br><br>
+        <form method="POST">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
 
-        <div class="wrap"><!--dette er nyt-->
-            <button type="submit"> <!--dette er nyt-->
-                Submit <!--dette er nyt-->
-            </button> <!--dette er nyt-->
-        <!--<button type="submit">Login</button> dette var med før-->
-        </div>
-    </form>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
 
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            <div class="wrap">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
     </div>
 </body>
 </html>
