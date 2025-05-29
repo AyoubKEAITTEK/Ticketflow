@@ -2,55 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Ticketflow - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        header {
+            background-color: #1f2937;
             padding: 20px;
+            color: white;
         }
-        .container {
-            max-width: 700px;
+
+        .nav-container {
+            max-width: 1100px;
             margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
         }
+
         h1 {
-            color: #333333;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: #1f2937;
         }
-        .user-info {
-            margin-top: 20px;
-            background-color: #e5e7eb;
-            padding: 10px;
-            border-radius: 4px;
+
+        .button-group {
+            margin-top: 30px;
         }
+
         .button {
-            margin-top: 20px;
-            display: inline-block;
             background-color: #2563eb;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 24px;
+            margin: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
             text-decoration: none;
-            border-radius: 4px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
         }
+
         .button:hover {
             background-color: #1d4ed8;
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav {
+                margin-top: 10px;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0 0 0;
+            }
         }
     </style>
 </head>
 <body>
-    {% if user.is_authenticated %}
-        <h1>Welcome, {{ user.username }}! to Ticketflow</h1>
-        <a href="{{ url_for('ticket') }}">Ticket</a> <!--dette er nyt-->
-        <a href="{{ url_for('my_tickets') }}">View My Tickets</a><br>
-        <a href="{{ url_for('closed_tickets') }}">View Closed Tickets</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-        <h1>Welcome, Guest!</h1>
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register')}}">Register</a>
-    {% endif %}
+    <header>
+        <div class="nav-container">
+            <div class="nav-logo">🎫 Ticketflow</div>
+            <nav>
+                {% if user.is_authenticated %}
+                    <a href="{{ url_for('ticket') }}">Ticket</a>
+                    <a href="{{ url_for('my_tickets') }}">My Tickets</a>
+                    <a href="{{ url_for('closed_tickets') }}">Closed Tickets</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        {% if user.is_authenticated %}
+            <h1>Welcome, {{ user.username }}!</h1>
+            <p>You are now logged in to Ticketflow – manage your support tickets easily.</p>
+            <div class="button-group">
+                <a href="{{ url_for('ticket') }}" class="button">Create Ticket</a>
+                <a href="{{ url_for('my_tickets') }}" class="button">View My Tickets</a>
+                <a href="{{ url_for('closed_tickets') }}" class="button">Closed Tickets</a>
+            </div>
+        {% else %}
+            <h1>Welcome to Ticketflow</h1>
+            <p>Please log in or register to start using the system.</p>
+            <div class="button-group">
+                <a href="{{ url_for('login') }}" class="button">Login</a>
+                <a href="{{ url_for('register') }}" class="button">Register</a>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
