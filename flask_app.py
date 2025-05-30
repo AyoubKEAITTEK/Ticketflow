@@ -102,7 +102,6 @@ def admin_dashboard():
             db.session.commit()
         return redirect(url_for("admin_dashboard"))
 
-    # 🔍 Handle location search
     search_location = request.args.get("location")
     query = Ticket.query.filter(Ticket.status != "Closed")
 
