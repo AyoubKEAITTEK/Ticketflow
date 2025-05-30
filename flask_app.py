@@ -131,20 +131,7 @@ def ticket():
         db.session.commit()
         return redirect(url_for("home"))
     return render_template("ticket.html")
-
-@app.route("/glemtkode", methods=["GET", "POST"])
-def glemt():
-    if request.method == "POST":
-        username = request.form.get("username")
-        new_password = request.form.get("password")
-
-        user = Users.query.filter_by(username=username).first()
-        if user:
-            user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-            db.session.commit()
-            return redirect(url_for('login'))
-    return render_template("glemtkode.html")
-
+    
 @app.route("/my_tickets")
 @login_required
 def my_tickets():
